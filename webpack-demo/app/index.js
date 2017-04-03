@@ -17,60 +17,58 @@ const timer = setInterval(finishImgDir,60);
 
 function finishImgDir() {
     if (imgArr.length === imageDir.length - 1) {
-        mergeImage(imgArr);
+        getCanvasInfo(imgArr);
         clearInterval(timer);
         return;
     } 
 }
-function mergeImage(arr) {
+function getCanvasInfo(arr) { //瀑布流布局
     const sqrt = Math.ceil(Math.sqrt(arr.length));
     let heightArr = Array(sqrt).fill(0);
-    let widthArr = Array(sqrt).fill(0);
-    let xline, yline, lastWidth, lastHeight;
+    let offsetArr = [];
+    let xline, yline, x_pos, maxHeight, maxWidth;
     let turns = 0;
     let x_offset = 20;
     let y_offset = 20;
-
-    console.log(sqrt);
-    // console.log(arrrr.indexOf(Math.min.apply(null,arrrr)));
-    
+    let newImage = images(100,100);
 
     arr.forEach((item, index) => {
-        xline = Math.ceil((index + 1)/sqrt); //calculate the line number
-        yline = (index + 1)%sqrt === 0 ? sqrt : (index + 1)%sqrt;
-        
-        lastWidth = widthArr[xline - 1];
-        lastHeight = heightArr[yline - 1];
-         
-        widthArr[xline - 1] = widthArr[xline - 1] === 0 ? Number(images(item).width()) : widthArr[xline - 1] + Number(images(item).width()) + 20;
-        heightArr[yline - 1] = heightArr[yline - 1] === 0 ? Number(images(item).height()) : heightArr[yline - 1] + Number(images(item).height()) + 20;
-       
-        let oWidth = Math.max.apply(null,widthArr);
-        let oHeight = Math.max.apply(null,heightArr);
-        console.log(images(item).width() + '======' + heightArr);
-        if (turns === 0) {
-            images(item).save("output.png", {
-                quality: 50
-            })
-        } else {
-            images("output.png")
-                .resize(oWidth,oHeight)
-                .draw(images(item), lastWidth, lastHeight)
-                .save("output.png", {
-                    quality: 50
-                })
-        }
-        
-        ++ turns;
-    })
+        const hIndex = heightArr.indexOf(Math.min.apply(null,heightArr));
+        const oWidth = 500;
 
+        heightArr[hIndex] = heightArr[hIndex] === 0 ?
+              Number(images(item).size(oWidth).height()) :
+              heightArr[hIndex] + Number(images(item).size(oWidth).height()) + 20;
+        x_pos = (oWidth + x_offset) * hIndex;
+
+        this.offsetObj = {
+            x: x_pos,
+            y: heightArr[hIndex] - Number(images(item).size(oWidth).height()),
+            image_path: item
+        }
+
+        offsetArr.push(this.offsetObj)
+
+        ++ turns;
+        if( turns === arr.length) {
+            maxHeight = Math.max.apply(null,heightArr);
+            maxWidth = Number(oWidth * sqrt + x_offset * (sqrt - 1));
+            newImage.size(maxWidth,maxHeight);
+            mergeImage(offsetArr, newImage);
+            // newImage.save("output.png");
+        }
+    })
    
 }
-// mergeImg(imgArr,{
-//     direction: true,
-//     offset: 60
-// })
-//   .then((img) => {
-//     img.write('out.png', () => console.log('done'));
- 
-// });
+
+function mergeImage(arr, newImage) {
+    turns = 0;
+    arr.forEach((item, index) => {
+        newImage.draw(images(item.image_path).size(500),item.x,item.y);
+        ++ turns;
+        if (turns === arr.length) {
+            newImage.save("output.png");
+            console.log('======done======');
+        }
+    })
+}
