@@ -3,7 +3,7 @@
 ### here is for the online review
 ### homepage here: [http://ekkoj.github.io/][1]
 
-| url | desc |
+| project name | desc |
 | ----- | ------ |
 | 1. [vue_test][2] | this is a test file for vue.js |
 
