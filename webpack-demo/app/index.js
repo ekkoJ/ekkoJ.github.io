@@ -1,11 +1,11 @@
 // const mergeImg = require('merge-img');
 const fs = require("fs");
 const images = require("images");
-
 const path = 'app/image2';
+const imageDir = fs.readdirSync(path);
 
 let imgArr = [];
-let imageDir = fs.readdirSync(path);
+
 
 
 imageDir.forEach((item, index) => {
@@ -61,27 +61,55 @@ function finishImgDir() {
    
 // }
 
-function mergeImage(arr, newImage) {
-    turns = 0;
-    arr.forEach((item, index) => {
-        newImage.draw(images(item.image_path).size(500),item.x,item.y);
-        ++ turns;
-        if (turns === arr.length) {
-            newImage.save("output.png");
-            console.log('======done======');
-        }
-    })
-}
+// function mergeImage(arr, newImage) {
+//     turns = 0;
+//     arr.forEach((item, index) => {
+//         newImage.draw(images(item.image_path).size(500),item.x,item.y);
+//         ++ turns;
+//         if (turns === arr.length) {
+//             newImage.save("output.png");
+//             console.log('======done======');
+//         }
+//     })
+// }
 
 function getCanvasInfo(arr) { //序列帧布局
-    const maxWidth = 2000;
-    const maxHeight = 1000;
-    const newImage = images(maxWidth, maxHeight);
+    
     const oWidth = 500;
-    const oHeight = oWidth * 0.66;
-    const row = parseInt(maxWidth / oWidth);
-    const column = parseInt(maxHeight / oHeight);
+    const picPix = 0.66; //图片宽高比
+    const oHeight = oWidth * picPix;
+    const row = 2; //行数
+    const column = 4; //列数
+    const maxNum = row * column; //每张序列帧最多图片个数
 
+    const maxWidth = oWidth * column; //图片最终宽
+    const maxHeight = oHeight * row; //图片最终高
 
+    const finalImageNum = Math.ceil(arr.length / maxNum); //总共要多少张序列帧
+    
+    let newImage = images(maxWidth, maxHeight);
+    let imageIndex = 0;
+   
+    arr.forEach((item, index) => {
+        if ((index + 1) > (imageIndex + 1) * maxNum) {
+            newImage.save(`outPut${imageIndex + 1}.png`);
+            newImage = images(maxWidth, maxHeight);
+            ++ imageIndex;
+        } 
+
+        if ((index + 1) === arr.length) {
+            newImage.save(`outPut${imageIndex + 1}.png`);
+            console.log(`image${index}=======done======`);
+            console.log(`=======alldone======`);
+            return;
+        } else {
+            const rowNumber = Math.ceil(((index - maxNum * imageIndex) + 1) / column); //所在行数
+            const columnNum = ((index - maxNum * imageIndex) + 1) % column === 0 ? column : ((index - maxNum * imageIndex) + 1) % column; //所在列数
+            const x_offset = oWidth * (columnNum - 1);
+            const y_offset = oHeight * (rowNumber - 1);
+            newImage.draw(images(item).size(oWidth,oHeight), x_offset, y_offset)
+            console.log(`image${index}=======done======`);
+        }
+    })
 
 }
