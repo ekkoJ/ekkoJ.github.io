@@ -7,10 +7,10 @@
 | ----- | ------ |
 | 1. [vue_test][2] | this is a test file for vue.js |
 | 2. [my_resume][3] | my resume |
-| 3. [three_questions][3] | a small test project |
+| 3. [three_questions][4] | a small test project |
 
 
 [1]:http://ekkoj.github.io
 [2]:http://ekkoj.github.io/vue_test/
 [3]:http://ekkoj.github.io/my_resume
-[3]:http://ekkoj.github.io/three_questions
+[4]:http://ekkoj.github.io/three_questions
