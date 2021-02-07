@@ -27,7 +27,7 @@
     "jimp": "^0.2.27",
     "merge-img": "^1.0.0",
     "webpack": "^2.3.2",
-    "webpack-dev-server": "^1.16.2",
+    "webpack-dev-server": "^3.10.3",
     "webpack-merge": "^1.0.2",
     "giflib": "^5.1.4"
   }
